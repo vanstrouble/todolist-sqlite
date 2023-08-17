@@ -4,10 +4,11 @@ from sqlalchemy import Column, Integer, String, Date
 from datetime import datetime
 
 # Create database
-engine = create_engine('sqlite:///:todo.db:')
+engine = create_engine('sqlite:///todo.db')
 Base = declarative_base()
 
 
+# Create tasks table
 class Table(Base):
     __tablename__ = 'task'
 
@@ -18,3 +19,7 @@ class Table(Base):
 
     def __repr__(self) -> str:
         return f"Table(id={self.id!r}, name={self.name_task!r}, details={self.details!r})"
+
+
+# Create all
+Base.metadata.create_all(engine)
