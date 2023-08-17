@@ -27,3 +27,10 @@ class Table(Base):
 
 # Create all
 Base.metadata.create_all(engine)
+
+# Add new row
+new_row = Table(id=1, name_task='Add new task to todo', details='IDK, just making a DB', limit_date=datetime(2020, 8, 20).date())
+session.add(new_row)
+
+# Consolidate everything
+session.commit()
