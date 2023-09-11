@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 # Create databse
-engine = create_engine("sqlite:///todo.db")
+engine = create_engine("sqlite:///todo_app/data/todo.db")
 Base = declarative_base()
 
 Session = sessionmaker(bind=engine)
@@ -47,6 +47,7 @@ if __name__ == "__main__":
             # session.add(new_task)
             # session.commit()  # Consolidate everything
 
+            # Make table consulting task
             rows = session.query(Task).all()
             [print(task) for task in rows]
     except SQLAlchemyError as e:
