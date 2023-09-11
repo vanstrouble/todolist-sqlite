@@ -9,6 +9,8 @@ Base = declarative_base()
 
 Session = sessionmaker(bind=engine)
 
+def create_session():
+    return Session()
 
 # Create task table
 class Task(Base):
