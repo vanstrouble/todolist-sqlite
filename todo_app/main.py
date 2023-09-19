@@ -9,20 +9,39 @@ class Main:
         self.rows = self.session.query(Task).all()
         self.today_rows = self.session.query(Task).filter(Task.limit_date == self.today).all()
 
-    def option_1(self,):
+    def option_1(self):
+        """Show a list of tasks for today"""
         print('')
         print(f'Today {self.today}'.center(50, '-'))
+
         if len(self.today_rows) > 0:
             [print(f'{count + 1}. {task}\n') for count, task in enumerate(self.rows)]
         else:
             print("\nYou're free for today. Nothing to do!\n")
 
-    def option_2(self,):
+    def option_2(self):
+        """Show a list of tasks for the week"""
         monday = self.today - timedelta(days=self.today.weekday())
         sunday = monday + timedelta(days=6)
         print('')
         print(f'Week {monday} to {sunday}'.center(50, '-'))
         print('')
+
+        tasks_in_week = self.session.query(Task).filter(
+            Task.limit_date >= monday,
+            Task.limit_date <= sunday,
+            Task.status == False
+        ).all()
+
+        if tasks_in_week:
+            print('Pending tasks or tasks with a deadline during the week:')
+            for task in tasks_in_week:
+                print(f'Task: {task.name_task}, Limit date: {task.limit_date}')
+        else:
+            print("\nYou're free for the week. Nothing to do!\n")
+
+    def option_5(self):
+        pass
 
     def menu(self):
         option = None
