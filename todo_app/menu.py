@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from models.task import Task, create_session
+from controller.connection import Task, create_session
 
 
-class Main:
+class Menu:
     def __init__(self) -> None:
         self.today = datetime.today().date()
         self.session = create_session()
@@ -38,13 +38,22 @@ class Main:
             print("\nYou're free for the week. Nothing to do!\n")
 
     def option_3(self):
+        """Show all tasks"""
         print(f" All tasks: {self.session.query(Task).count()} ".center(50, '-'))
 
-        all_tasks = self.session.query(Task).select_from(Task).all()
+        all_tasks = self.session.query(Task).all()
         [print(f"\n{task}") for task in all_tasks]
         print('')
 
+    def option_4(self):
+        """Show a list of pending tasks"""
+        print(f" Incomplete tasks: {self.session.query(Task).filter(Task.status == False).count()} ".center(50, '-'))
+        pending_task = self.session.query(Task).filter(Task.status == False).all()
+        [print(f"\n{task}") for task in pending_task]
+        print('')
+
     def option_5(self):
+        """Add a new task"""
         print(" Add a new task ".center(50, '-'))
 
         name_task = input('Task name: ')
@@ -60,6 +69,54 @@ class Main:
         self.session.add(new_task)
         self.session.commit()
         print(f"\nTask added successfully\n")
+
+    def option_6(self):
+        """Modify a task"""
+        print(" Modify a task ".center(50, '-'))
+        id_task = int(input('Task id to modify: '))
+
+        task_to_modify = self.session.query(Task).filter(Task.id == id_task).first()
+
+        if task_to_modify:
+            print(f"Modifying task with ID {id_task}: {task_to_modify.name_task}")
+            new_name = input('Enter the new task name (press Enter to keep it unchanged): ')
+            new_details = input('Enter the new task details (press Enter to keep it unchanged): ')
+            new_limit_date = input('Enter the new limit date (YYYY-MM-DD) (press Enter to keep it unchanged): ')
+            update_status = input('Do you want to update the task status? (y/n): ')
+
+            if new_name:
+                task_to_modify.name_task = new_name
+            if new_details:
+                task_to_modify.details = new_details
+            if new_limit_date:
+                try:
+                    task_to_modify.limit_date = datetime.strptime(new_limit_date, '%Y-%m-%d').date()
+                except ValueError:
+                    print('Invalid date format. Task limit date not updated.')
+
+            if update_status.lower() == 'y':
+                new_status = input('Enter the new task status (Complete/Incomplete): ').capitalize()
+                if new_status in ['Complete', 'Incomplete']:
+                    task_to_modify.status = (new_status == 'Complete')
+                else:
+                    print('Invalid status. Task status not updated.')
+
+            self.session.commit()
+            print('\nTask modified successfully.\n')
+        else:
+            print(f'\nTask with ID {id_task} not found.\n')
+
+    def option_7(self):
+        """Delete a task"""
+        print(" Delete a task ".center(50, '-'))
+        id_task = int(input('Task id to modify: '))
+
+        task_to_delete = self.session.query(Task).filter(Task.id == id_task).first()
+        if task_to_delete:
+            self.session.query(Task).filter(Task.id == id_task).delete()
+            print('\nTask deleted successfully.\n')
+        else:
+            print(f'\nTask with ID {id_task} not found.\n')
 
     def menu(self):
         option = None
@@ -87,6 +144,10 @@ class Main:
                     self.option_4()
                 if option == 5:
                     self.option_5()
+                if option == 6:
+                    self.option_6()
+                if option == 7:
+                    self.option_7()
 
             except Exception as e:
                 print(f'\nError: {e}\n')
@@ -96,4 +157,4 @@ class Main:
 
 
 if __name__ == "__main__":
-    Main().menu()
+    Menu().menu()
