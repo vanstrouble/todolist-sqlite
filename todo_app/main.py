@@ -15,7 +15,7 @@ class Main:
         print(f' Today {self.today} '.center(50, '-'))
 
         if len(self.today_rows) > 0:
-            [print(f'{count + 1}. {task}\n') for count, task in enumerate(self.rows)]
+            [print(f'{count + 1}. \n{task}\n') for count, task in enumerate(self.today_rows)]
         else:
             print("\nYou're free for today. Nothing to do!\n")
 
@@ -34,9 +34,7 @@ class Main:
 
         if tasks_in_week:
             print('\nPending tasks or tasks with a deadline during the week:')
-            for count, task in enumerate(tasks_in_week):
-                print(f'{count+1}: Task: {task.name_task}, Limit date: {task.limit_date}')
-            print('')
+            [print(f'{count + 1}. \n{task}\n') for count, task in enumerate(tasks_in_week)]
         else:
             print("\nYou're free for the week. Nothing to do!\n")
 
@@ -62,7 +60,7 @@ class Main:
         option = None
         while option != 8:
             try:
-                print('.::Menu de opciones:.'.center(50, '-'))
+                print('.::Menu de opciones::.'.center(50, '-'))
                 print('1. Tasks for today.')
                 print('2. Tasks for the week.')
                 print('3. All tasks.')
