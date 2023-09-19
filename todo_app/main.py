@@ -7,15 +7,14 @@ class Main:
         self.today = datetime.today().date()
         self.session = create_session()
         self.rows = self.session.query(Task).all()
-        self.today_rows = self.session.query(Task).filter(Task.limit_date == self.today).all()
 
     def option_1(self):
         """Show a list of tasks for today"""
-        print('')
         print(f' Today {self.today} '.center(50, '-'))
 
-        if len(self.today_rows) > 0:
-            [print(f'{count + 1}. \n{task}\n') for count, task in enumerate(self.today_rows)]
+        today_rows = self.session.query(Task).filter(Task.limit_date == self.today).all()
+        if len(today_rows) > 0:
+            [print(f'{count + 1}. \n{task}\n') for count, task in enumerate(today_rows)]
         else:
             print("\nYou're free for today. Nothing to do!\n")
 
@@ -38,8 +37,14 @@ class Main:
         else:
             print("\nYou're free for the week. Nothing to do!\n")
 
-    def option_5(self):
+    def option_3(self):
+        print(f" All tasks: {self.session.query(Task).count()} ".center(50, '-'))
+
+        all_tasks = self.session.query(Task).select_from(Task).all()
+        [print(f"\n{task}") for task in all_tasks]
         print('')
+
+    def option_5(self):
         print(" Add a new task ".center(50, '-'))
 
         name_task = input('Task name: ')
