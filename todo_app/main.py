@@ -12,7 +12,7 @@ class Main:
     def option_1(self):
         """Show a list of tasks for today"""
         print('')
-        print(f'Today {self.today}'.center(50, '-'))
+        print(f' Today {self.today} '.center(50, '-'))
 
         if len(self.today_rows) > 0:
             [print(f'{count + 1}. {task}\n') for count, task in enumerate(self.rows)]
@@ -24,8 +24,7 @@ class Main:
         monday = self.today - timedelta(days=self.today.weekday())
         sunday = monday + timedelta(days=6)
         print('')
-        print(f'Week {monday} to {sunday}'.center(50, '-'))
-        print('')
+        print(f' Week {monday} to {sunday} '.center(50, '-'))
 
         tasks_in_week = self.session.query(Task).filter(
             Task.limit_date >= monday,
@@ -34,14 +33,30 @@ class Main:
         ).all()
 
         if tasks_in_week:
-            print('Pending tasks or tasks with a deadline during the week:')
-            for task in tasks_in_week:
-                print(f'Task: {task.name_task}, Limit date: {task.limit_date}')
+            print('\nPending tasks or tasks with a deadline during the week:')
+            for count, task in enumerate(tasks_in_week):
+                print(f'{count+1}: Task: {task.name_task}, Limit date: {task.limit_date}')
+            print('')
         else:
             print("\nYou're free for the week. Nothing to do!\n")
 
     def option_5(self):
-        pass
+        print('')
+        print(" Add a new task ".center(50, '-'))
+
+        name_task = input('Task name: ')
+        details = input('Task details: ')
+        limit_date = input('Task deadline (YYYY-MM-DD): ')
+
+        try:
+            limit_date = datetime.strptime(limit_date, '%Y-%m-%d').date()
+        except ValueError:
+            print('Invalid date format. Please use Year-month-day format.')
+
+        new_task = Task(name_task=name_task, details=details, limit_date=limit_date)
+        self.session.add(new_task)
+        self.session.commit()
+        print(f"\nTask added successfully\n")
 
     def menu(self):
         option = None
@@ -67,6 +82,8 @@ class Main:
                     self.option_3()
                 if option == 4:
                     self.option_4()
+                if option == 5:
+                    self.option_5()
 
             except Exception as e:
                 print(f'\nError: {e}\n')
