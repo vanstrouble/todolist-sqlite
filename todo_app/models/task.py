@@ -1,57 +1,75 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Boolean
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+class Task:
+    def __init__(self, id_task=None, name_task=None, details=None, created_at=None, limit_date=None, status=None) -> None:
+        self._id_task = id_task
+        self._name_task = name_task
+        self._details = details
+        self._created_at = created_at
+        self._limit_date = limit_date
+        self._status = status
 
-# Create databse
-engine = create_engine("sqlite:///todo_app/data/todo.db")
-Base = declarative_base()
+    def __str__(self):
+        status_str = 'Completed' if self._status else 'Incomplete'
+        return f'''
+        Task ID: {self._id_task}
+        Task Name: {self._name_task}
+        Task Details: {self._details}
+        Created Date: {self._created_at}
+        Limit Date: {self._limit_date}
+        Status: {status_str}
+        '''
 
-Session = sessionmaker(bind=engine)
+    @property
+    def id_task(self):
+        return self._id_task
 
-def create_session():
-    return Session()
+    @id_task.setter
+    def id(self, id_task):
+        self._id_task = id_task
 
-# Create task table
-class Task(Base):
-    __tablename__ = "tasks"
+    @property
+    def name_task(self):
+        return self._name_task
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name_task = Column(String, default="empty task")
-    details = Column(String, default="empty task details")
-    created_at = Column(Date, default=datetime.today().date())
-    limit_date = Column(Date, default=datetime.today().date())
-    status = Column(Boolean, default=False)
+    @name_task.setter
+    def name_task(self, name_task):
+        self._name_task = name_task
 
-    def __repr__(self) -> str:
-        return f"""\
-        Task ID: {self.id}
-        Task Name: {self.name_task}
-        Task Details: {self.details}
-        Created Date: {self.created_at}
-        Limit Date: {self.limit_date}
-        Status: {'Completed' if self.status else 'Incomplete'}\
-        """
+    @property
+    def details(self):
+        return self._details
+
+    @details.setter
+    def details(self, details):
+        self._details = details
+
+    @property
+    def created_at(self):
+        return self._created_at
+
+    @created_at.setter
+    def created_at(self, created_at):
+        self._created_at = created_at
+
+    @property
+    def limit_date(self):
+        return self._limit_date
+
+    @limit_date.setter
+    def limit_date(self, limit_date):
+        self._limit_date = limit_date
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, status):
+        self._status = status
 
 
-# Create all
-Base.metadata.create_all(engine)
+if __name__ == '__main__':
+    task1 = Task(1, "Hacer compras", "Comprar leche y pan", "2023-09-20", "2023-09-22", False)
+    print(task1)
 
-if __name__ == "__main__":
-    try:
-        with Session() as session:
-            # Add new row
-            # new_task = Task(
-            #     name_task="Add new task to todo",
-            #     details="IDK, just making a DB",
-            #     limit_date=datetime(2020, 8, 20).date(),
-            # )
-            # session.add(new_task)
-            # session.commit()  # Consolidate everything
-
-            # Make table consulting task
-            rows = session.query(Task).all()
-            [print(task) for task in rows]
-    except SQLAlchemyError as e:
-        # Handle database errors here
-        print(f"An error occurred: {e}")
+    task2 = Task(2, "Recoger la casa", "Limpiar el piso y los muebles", "2023-09-20", "2023-09-22", False)
+    print(task2)
